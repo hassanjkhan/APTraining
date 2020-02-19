@@ -35,6 +35,7 @@
 <script>
   var video = document.querySelector("#videoElement");
   var canvas = document.getElementById('canvas');
+  canvas.style.display = "none";
   var context = canvas.getContext('2d');
 if (navigator.mediaDevices.getUserMedia) {
   navigator.mediaDevices.getUserMedia({ video: true })
@@ -48,16 +49,18 @@ if (navigator.mediaDevices.getUserMedia) {
 }
 
 var i = 0;
+
 var interval = setInterval(function(){
-  //context.drawImage(video,0,0,640,480);
+  context.drawImage(video,0,0,640,480);
   i++;
   const img = new Image();
   img.src = canvas.toDataURL();
+  
 
   
   async function loadAndPredict() {
-      const net = await bodyPix.load(/** optional arguments, see below **/);
-
+      const net = await bodyPix.load();
+        
       /**
        * One of (see documentation below):
        *   - net.segmentPerson
@@ -67,11 +70,13 @@ var interval = setInterval(function(){
        * See documentation below for details on each method.
        */
       const segmentation = await net.segmentPerson(img);
-      console.log(segmentation);
+      overHead(segmentation);
+      
+
     }
    loadAndPredict();
     
-  },1000)
+  },1)
 
   setInterval(function(){
     var header = document.getElementById("frames");
@@ -80,7 +85,23 @@ var interval = setInterval(function(){
     i = 0;
   }, 1000);
 
-  clearInterval(interval);
+  //setTimeout(function(){clearInterval(interval)},2000);
+
+
+  function overHead(segmentation){
+    for(var x = 0; x < segmentation.allPoses.length; x++){
+        var current = segmentation.allPoses[x];
+        if(current.keypoints[9].score >= 0.85 && current.keypoints[10].score >= 0.85){
+            if(Math.abs(current.keypoints[9].position.y - current.keypoints[10].position.y) > 40){
+                console.log("Wrist imbalance");
+            } else {
+                console.log("Wrist are balanced");
+            }
+        }else{
+            console.log("current score isn't enough");
+        }   
+    }
+  }
 </script>
 </body>
 </html>
