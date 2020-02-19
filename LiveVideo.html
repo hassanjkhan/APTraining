@@ -22,13 +22,13 @@
 
 <body>
 <div id="container">
-	<video autoplay="true" id="videoElement">
-
-	</video>
+  <video autoplay="true" id="videoElement"></video>
+  <canvas id="canvas" width="640" height ="480"></canvas>
 </div>
 <script>
   var video = document.querySelector("#videoElement");
-
+  var canvas = document.getElementById('canvas');
+  var context = canvas.getContext('2d');
 if (navigator.mediaDevices.getUserMedia) {
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(function (stream) {
@@ -37,7 +37,11 @@ if (navigator.mediaDevices.getUserMedia) {
     .catch(function (err0r) {
       console.log("Something went wrong!");
     });
+  
 }
+
+setInterval(function(){context.drawImage(video,0,0,640,480)},10)
+
 </script>
 </body>
 </html>
