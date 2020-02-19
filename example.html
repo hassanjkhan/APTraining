@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <!-- Load TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.2"></script>
+    <!-- Load BodyPix -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
+ </head>
+
+  <body>
+    <video id="video" width="640" height="360" src="http://localhost:8888/hassancurl.mov" crossorigin="anonymous" autoplay>
+  </body>
+  <!-- Place your code in the script tag below. You can also use an external .js file -->
+  <script>
+    const vid = document.getElementById('video');
+    vid.onloadstart = function() {
+     // alert("Starting to load video");
+    };
+    vid.ondurationchange = function() {
+      //alert("The video duration has changed");
+    };
+    vid.onloadedmetadata = function() {
+      //alert("Metadata for video loaded");
+    };
+    vid.onprogress = function() {
+      //alert("Downloading video");
+    };
+    vid.oncanplay = function() {
+      //alert("Can start playing video");
+    };
+    vid.oncanplaythrough = function() {
+     // alert("Can play through video without stopping");
+    };
+
+    async function loadAndPredict() {
+      const net = await bodyPix.load(/** optional arguments, see below **/);
+
+      /**
+       * One of (see documentation below):
+       *   - net.segmentPerson
+       *   - net.segmentPersonParts
+       *   - net.segmentMultiPerson
+       *   - net.segmentMultiPersonParts
+       * See documentation below for details on each method.
+       */
+      const segmentation = await net.segmentPerson(vid);
+      console.log(segmentation);
+    }
+    loadAndPredict();
+  </script>
+</html>
