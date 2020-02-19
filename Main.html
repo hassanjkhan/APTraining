@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Load TensorFlow.js -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.2"></script>
+<!-- Load BodyPix -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
+
+<meta charset="utf-8">
+<title>Display Webcam Stream</title>
+
+<style>
+#container {
+	margin: 0px auto;
+	width: 500px;
+	height: 375px;
+	border: 10px #333 solid;
+}
+#videoElement {
+	width: 500px;
+	height: 375px;
+	background-color: #666;
+  transform: rotateY(180deg); 
+}
+</style>
+</head>
+
+<body>
+<h2 id = "frames">Frame: </h2>
+<div id="container">
+  <video autoplay="true" id="videoElement"></video>
+  <canvas id="canvas" width="640" height ="480"></canvas>
+  
+</div>
+<script>
+  var video = document.querySelector("#videoElement");
+  var canvas = document.getElementById('canvas');
+  var context = canvas.getContext('2d');
+if (navigator.mediaDevices.getUserMedia) {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function (stream) {
+      video.srcObject = stream;
+    })
+    .catch(function (err0r) {
+      console.log("Something went wrong!");
+    });
+  
+}
+
+var i = 0;
+var interval = setInterval(function(){
+  //context.drawImage(video,0,0,640,480);
+  i++;
+  const img = new Image();
+  img.src = canvas.toDataURL();
+
+  
+  async function loadAndPredict() {
+      const net = await bodyPix.load(/** optional arguments, see below **/);
+
+      /**
+       * One of (see documentation below):
+       *   - net.segmentPerson
+       *   - net.segmentPersonParts
+       *   - net.segmentMultiPerson
+       *   - net.segmentMultiPersonParts
+       * See documentation below for details on each method.
+       */
+      const segmentation = await net.segmentPerson(img);
+      console.log(segmentation);
+    }
+   loadAndPredict();
+    
+  },1000)
+
+  setInterval(function(){
+    var header = document.getElementById("frames");
+    header.innerHTML = "Frames: " + i;
+    //console.log(i);
+    i = 0;
+  }, 1000);
+
+  clearInterval(interval);
+</script>
+</body>
+</html>
