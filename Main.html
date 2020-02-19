@@ -29,6 +29,7 @@
 <h2 id = "frames">Frame: </h2>
 <div id="container">
   <video autoplay="true" id="videoElement"></video>
+  <p id="feedback"> </p>
   <canvas id="canvas" width="640" height ="480"></canvas>
   
 </div>
@@ -37,6 +38,7 @@
   var canvas = document.getElementById('canvas');
   canvas.style.display = "none";
   var context = canvas.getContext('2d');
+  var i = 0;
 if (navigator.mediaDevices.getUserMedia) {
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(function (stream) {
@@ -45,22 +47,21 @@ if (navigator.mediaDevices.getUserMedia) {
     .catch(function (err0r) {
       console.log("Something went wrong!");
     });
-  
 }
-
-var i = 0;
 
 var interval = setInterval(function(){
   context.drawImage(video,0,0,640,480);
   i++;
   const img = new Image();
   img.src = canvas.toDataURL();
-  
-
-  
   async function loadAndPredict() {
-      const net = await bodyPix.load();
-        
+      const net = await bodyPix.load({
+        architecture: 'MobileNetV1',
+        outputStride: 16,
+        multiplier: 0.75,
+        quantBytes: 2
+            });
+                    
       /**
        * One of (see documentation below):
        *   - net.segmentPerson
@@ -70,37 +71,44 @@ var interval = setInterval(function(){
        * See documentation below for details on each method.
        */
       const segmentation = await net.segmentPerson(img);
+      //console.log(segmentation);
       overHead(segmentation);
       
 
     }
    loadAndPredict();
     
-  },1)
+  },500);
 
   setInterval(function(){
     var header = document.getElementById("frames");
     header.innerHTML = "Frames: " + i;
-    //console.log(i);
     i = 0;
   }, 1000);
 
-  //setTimeout(function(){clearInterval(interval)},2000);
-
+  //setTimeout(function(){clearInterval(interval)},20000);
 
   function overHead(segmentation){
-    for(var x = 0; x < segmentation.allPoses.length; x++){
-        var current = segmentation.allPoses[x];
-        if(current.keypoints[9].score >= 0.85 && current.keypoints[10].score >= 0.85){
+    if(segmentation.allPoses.length > 0){
+        var current = segmentation.allPoses[0];
+        if(current.keypoints[9].score >= 0.50 && current.keypoints[10].score >= 0.50){
             if(Math.abs(current.keypoints[9].position.y - current.keypoints[10].position.y) > 40){
-                console.log("Wrist imbalance");
+                if(current.keypoints[9].position.y > current.keypoints[10].position.y){
+                    document.getElementById("feedback").innerHTML = "Right Wrist too high!";
+                } else {
+                    document.getElementById("feedback").innerHTML = "Left Wrist too high!";
+                }
             } else {
+                document.getElementById("feedback").innerHTML = " Wrist Balanced";
                 console.log("Wrist are balanced");
             }
-        }else{
+        } else {
+            document.getElementById("feedback").innerHTML = "________________";
             console.log("current score isn't enough");
-        }   
+        }
+        console.log(segmentation.allPoses);
     }
+    
   }
 </script>
 </body>
