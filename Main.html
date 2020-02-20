@@ -7,11 +7,13 @@
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
 
 <meta charset="utf-8">
-<title>Display Webcam Stream</title>
+<title>APTraining</title>
 
 <style>
+
+
 #container {
-	margin: 0px auto;
+	margin: auto;
 	width: 500px;
 	height: 375px;
 	border: 10px #333 solid;
@@ -26,17 +28,19 @@
 </head>
 
 <body>
-<h2 id = "frames">Frame: </h2>
+<h2 style="color:white;" id = "frames">Frame: </h2>
 <div id="container">
   <video autoplay="true" id="videoElement"></video>
-  <p id="feedback">________________</p>
-  <p id="reps">Reps: 0</p>
-  <canvas id="canvas" width="640" height ="480"></canvas>
+   <canvas id="canvas" width="640" height ="480"></canvas>
+  <p style="color:white;" id="feedback" >________________</p>
+  <p style="color:white;" id="reps">Reps: 0</p>
+ 
   
 </div>
 <audio src="" id="speech" hidden></audio>
 <script>
-  
+    document.body.style.background = "url('BackgroundImg.png') ";
+	document.body.style.backgroundColor = "#737373";
 var video = document.querySelector("#videoElement");
 var canvas = document.getElementById('canvas');
 canvas.style.display = "none";
@@ -112,7 +116,7 @@ var interval = setInterval(function(){
     var repSource = document.getElementById("reps");
     var currentHeight = (yl + yr)/ 2;
     var currentPosition;
-    console.log("Current P: " + currentPosition + " Last P: " + lastPosition);
+    //console.log("Current P: " + currentPosition + " Last P: " + lastPosition);
     if(currentHeight > ynose){
         currentPosition = 1;
     } else{
