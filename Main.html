@@ -29,16 +29,22 @@
 <h2 id = "frames">Frame: </h2>
 <div id="container">
   <video autoplay="true" id="videoElement"></video>
-  <p id="feedback"> </p>
+  <p id="feedback">________________</p>
+  <p id="reps">Reps: 0</p>
   <canvas id="canvas" width="640" height ="480"></canvas>
   
 </div>
 <script>
-  var video = document.querySelector("#videoElement");
-  var canvas = document.getElementById('canvas');
-  canvas.style.display = "none";
-  var context = canvas.getContext('2d');
-  var i = 0;
+  
+var video = document.querySelector("#videoElement");
+var canvas = document.getElementById('canvas');
+canvas.style.display = "none";
+var context = canvas.getContext('2d');
+var frames = 0;
+var reps = 0;
+var lastPosition = 0;
+var yl, yr = 0; //left and right wrist y values
+
 if (navigator.mediaDevices.getUserMedia) {
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(function (stream) {
@@ -51,64 +57,72 @@ if (navigator.mediaDevices.getUserMedia) {
 
 var interval = setInterval(function(){
   context.drawImage(video,0,0,640,480);
-  i++;
+  frames++;
   const img = new Image();
-  img.src = canvas.toDataURL();
+  img.src = canvas.toDataURL('image/jpeg',0.5);
   async function loadAndPredict() {
-      const net = await bodyPix.load({
-        architecture: 'MobileNetV1',
-        outputStride: 16,
-        multiplier: 0.75,
-        quantBytes: 2
-            });
+      const net = await bodyPix.load({architecture: 'MobileNetV1', outputStride: 16, multiplier: 0.75, quantBytes: 2 });
                     
-      /**
-       * One of (see documentation below):
-       *   - net.segmentPerson
-       *   - net.segmentPersonParts
-       *   - net.segmentMultiPerson
-       *   - net.segmentMultiPersonParts
-       * See documentation below for details on each method.
-       */
       const segmentation = await net.segmentPerson(img);
-      //console.log(segmentation);
-      overHead(segmentation);
       
+      overHead(segmentation); 
 
     }
    loadAndPredict();
     
-  },500);
+  },400);
 
   setInterval(function(){
     var header = document.getElementById("frames");
-    header.innerHTML = "Frames: " + i;
-    i = 0;
+    header.innerHTML = "Frames: " + frames;
+    frames = 0;
   }, 1000);
 
   //setTimeout(function(){clearInterval(interval)},20000);
 
   function overHead(segmentation){
+    
     if(segmentation.allPoses.length > 0){
         var current = segmentation.allPoses[0];
+        yl = current.keypoints[10].position.y;
+        yr = current.keypoints[9].position.y;
         if(current.keypoints[9].score >= 0.50 && current.keypoints[10].score >= 0.50){
-            if(Math.abs(current.keypoints[9].position.y - current.keypoints[10].position.y) > 40){
-                if(current.keypoints[9].position.y > current.keypoints[10].position.y){
+            if(Math.abs(yr - yl) > 40){
+                if(yr > yl){
                     document.getElementById("feedback").innerHTML = "Right Wrist too high!";
                 } else {
                     document.getElementById("feedback").innerHTML = "Left Wrist too high!";
                 }
             } else {
                 document.getElementById("feedback").innerHTML = " Wrist Balanced";
-                console.log("Wrist are balanced");
+                //console.log("Wrist are balanced");
             }
         } else {
             document.getElementById("feedback").innerHTML = "________________";
-            console.log("current score isn't enough");
+            //console.log("current score isn't enough");
         }
-        console.log(segmentation.allPoses);
+        UpdateDirection(current.keypoints[0].position.y,yl,yr);
+        //console.log(segmentation.allPoses);
     }
     
+  }
+
+  function UpdateDirection(ynose,yl,yr){
+    var repSource = document.getElementById("reps");
+    var currentHeight = (yl + yr)/ 2;
+    var currentPosition;
+    console.log("Current P: " + currentPosition + " Last P: " + lastPosition);
+    if(currentHeight > ynose){
+        currentPosition = 1;
+    } else{
+        currentPosition  = 0;
+    }
+
+    if (currentPosition  != lastPosition ){
+        reps++;
+        repSource.innerHTML = "Reps: " + Math.round(reps/2);
+    }
+    lastPosition = currentPosition ;
   }
 </script>
 </body>
