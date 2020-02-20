@@ -45,7 +45,7 @@ canvas.style.display = "none";
 var context = canvas.getContext('2d');
 var frames = 0;
 var reps = 0;
-var lastPosition = 0;
+var lastPosition = 1;
 var yl, yr = 0; //left and right wrist y values
 
 if (navigator.mediaDevices.getUserMedia) {
@@ -98,8 +98,7 @@ var interval = setInterval(function(){
                     if(document.getElementById("feedback").innerHTML != "Left Wrist too high!"){
                       speak("Left Wrist too high!");
                     }
-                    document.getElementById("feedback").innerHTML = "Left Wrist too high!";
-                    
+                    document.getElementById("feedback").innerHTML = "Left Wrist too high!";   
                 }
             } else {
                 
@@ -114,15 +113,15 @@ var interval = setInterval(function(){
         UpdateDirection(current.keypoints[0].position.y,yl,yr);
         //console.log(segmentation.allPoses);
     }
-    
   }
 
   function UpdateDirection(ynose,yl,yr){
     var repSource = document.getElementById("reps");
-    var currentHeight = (yl + yr)/ 2;
+    //var currentHeight = (yl + yr)/ 2;
+    
     var currentPosition;
     //console.log("Current P: " + currentPosition + " Last P: " + lastPosition);
-    if(currentHeight > ynose){
+    if(yl > ynose && yr > ynose){
         currentPosition = 1;
     } else{
         currentPosition  = 0;
