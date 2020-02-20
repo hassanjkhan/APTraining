@@ -34,6 +34,7 @@
   <canvas id="canvas" width="640" height ="480"></canvas>
   
 </div>
+<audio src="" id="speech" hidden></audio>
 <script>
   
 var video = document.querySelector("#videoElement");
@@ -124,6 +125,18 @@ var interval = setInterval(function(){
     }
     lastPosition = currentPosition ;
   }
+ setInterval(function(){speak("HI")},5000);
+  function speak(text)
+  {
+ 
+text = encodeURIComponent(text);
+
+var url = "http://translate.google.com/translate_tts?tl=en&q=" + text + "&client=tw-ob";
+var audio = document.getElementById("speech");
+audio.src = url;
+audio.play();
+
+}
 </script>
 </body>
 </html>
