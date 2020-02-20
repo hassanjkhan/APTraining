@@ -1,37 +1,63 @@
-$(function(){
-    if ('speechSynthesis' in window) {
-      speechSynthesis.onvoiceschanged = function() {
-        var $voicelist = $('#voices');
-  
-        if($voicelist.find('option').length == 0) {
-          speechSynthesis.getVoices().forEach(function(voice, index) {
-            var $option = $('<option>')
-            .val(index)
-            .html(voice.name + (voice.default ? ' (default)' :''));
-  
-            $voicelist.append($option);
-          });
-  
-          $voicelist.material_select();
-        }
-      }
-  
-      $('#speak').click(function(){
-        var text = $('#message').val();
-        var msg = new SpeechSynthesisUtterance();
-        var voices = window.speechSynthesis.getVoices();
-        msg.voice = voices[$('#voices').val()];
-        msg.rate = $('#rate').val() / 10;
-        msg.pitch = $('#pitch').val();
-        msg.text = text;
-  
-        msg.onend = function(e) {
-          console.log('Finished in ' + event.elapsedTime + ' seconds.');
-        };
-  
-        speechSynthesis.speak(msg);
-      })
-    } else {
-      $('#modal1').openModal();
+var synth;
+
+
+var voiceSelect ;
+
+
+
+var voices ;
+
+
+
+function populateVoiceList() {
+  voices = synth.getVoices();
+
+  for(i = 0; i < voices.length ; i++) {
+    var option = document.createElement("option");
+    option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
+    
+    if(voices[i].default) {
+      option.textContent += " -- DEFAULT";
     }
-  });
+
+    option.setAttribute("data-lang", voices[i].lang);
+    option.setAttribute("data-name", voices[i].name);
+    voiceSelect.appendChild(option);
+  }
+}
+
+
+
+function myFunction(inputTxt) {
+ 
+
+  var utterThis = new SpeechSynthesisUtterance();
+  var selectedOption = voiceSelect.selectedOptions[0].getAttribute("data-name");
+  for(i = 0; i < voices.length ; i++) {
+    if(voices[i].name === selectedOption) {
+      utterThis.voice = voices[i];
+    }
+  }
+  utterThis.pitch = 2.0;
+  utterThis.rate = 1;
+  utterThis.text = inputTxt;
+  synth.speak(utterThis);
+
+}
+
+window.onload =function()
+{
+	synth  = window.speechSynthesis;
+	voiceSelect = document.getElementById("voiceSelect");
+	voices = [];
+	
+	populateVoiceList();
+	if (speechSynthesis.onvoiceschanged !== undefined) {
+	  speechSynthesis.onvoiceschanged = populateVoiceList;
+	
+	}
+  	
+}
+
+function myMFunction(){ myFunction("Usama is idiot"); }
+
