@@ -7,11 +7,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
 
 <meta charset="utf-8">
-<title>APTraining</title>
+<title>AP Trainer</title>
 
 <style>
-
-
 #container {
 	margin: auto;
 	width: 500px;
@@ -31,16 +29,16 @@
 <h2 style="color:white;" id = "frames">Frame: </h2>
 <div id="container">
   <video autoplay="true" id="videoElement"></video>
-   <canvas id="canvas" width="640" height ="480"></canvas>
+  <canvas id="canvas" width="640" height ="480"></canvas>
   <p style="color:white;" id="feedback" >________________</p>
   <p style="color:white;" id="reps">Reps: 0</p>
- 
-  
 </div>
 <audio src="" id="speech" hidden></audio>
 <script>
-    document.body.style.background = "url('BackgroundImg.png') ";
-	document.body.style.backgroundColor = "#737373";
+//sets background design
+document.body.style.background = "url('BackgroundImg.png') ";
+document.body.style.backgroundColor = "#737373";
+
 var video = document.querySelector("#videoElement");
 var canvas = document.getElementById('canvas');
 canvas.style.display = "none";
@@ -66,14 +64,11 @@ var interval = setInterval(function(){
   const img = new Image();
   img.src = canvas.toDataURL('image/jpeg',0.5);
   async function loadAndPredict() {
-      const net = await bodyPix.load({architecture: 'MobileNetV1', outputStride: 16, multiplier: 0.75, quantBytes: 2 });
-                    
+      const net = await bodyPix.load({architecture: 'MobileNetV1', outputStride: 16, multiplier: 0.75, quantBytes: 2 });         
       const segmentation = await net.segmentPerson(img);
-      
       overHead(segmentation); 
-
     }
-   loadAndPredict();
+  loadAndPredict();
     
   },400);
 
@@ -95,11 +90,14 @@ var interval = setInterval(function(){
             if(Math.abs(yr - yl) > 40){
                 if(yr > yl){
                     document.getElementById("feedback").innerHTML = "Right Wrist too high!";
+                    speak("Right Wrist too high!");
                 } else {
                     document.getElementById("feedback").innerHTML = "Left Wrist too high!";
+                    speak("Left Wrist too high!");
                 }
             } else {
-                document.getElementById("feedback").innerHTML = " Wrist Balanced";
+                document.getElementById("feedback").innerHTML = "Wrist Balanced";
+                speak("Wrist Balanced");
                 //console.log("Wrist are balanced");
             }
         } else {
@@ -129,18 +127,16 @@ var interval = setInterval(function(){
     }
     lastPosition = currentPosition ;
   }
- setInterval(function(){speak("HI")},5000);
-  function speak(text)
-  {
  
-text = encodeURIComponent(text);
 
-var url = "http://translate.google.com/translate_tts?tl=en&q=" + text + "&client=tw-ob";
-var audio = document.getElementById("speech");
-audio.src = url;
-audio.play();
-
+function speak(text){
+  text = encodeURIComponent(text);
+  var url = "http://translate.google.com/translate_tts?tl=en&q=" + text + "&client=tw-ob";
+  var audio = document.getElementById("speech");
+  audio.src = url;
+  audio.play();
 }
+
 </script>
 </body>
 </html>
