@@ -89,15 +89,24 @@ var interval = setInterval(function(){
         if(current.keypoints[9].score >= 0.50 && current.keypoints[10].score >= 0.50){
             if(Math.abs(yr - yl) > 40){
                 if(yr > yl){
+                  if(document.getElementById("feedback").innerHTML != "Right Wrist too high!"){
+                      speak("Right Wrist too high!");
+                    }
                     document.getElementById("feedback").innerHTML = "Right Wrist too high!";
-                    speak("Right Wrist too high!");
+          
                 } else {
+                    if(document.getElementById("feedback").innerHTML != "Left Wrist too high!"){
+                      speak("Left Wrist too high!");
+                    }
                     document.getElementById("feedback").innerHTML = "Left Wrist too high!";
-                    speak("Left Wrist too high!");
+                    
                 }
             } else {
+                if(document.getElementById("feedback").innerHTML != "Wrist Balanced"){
+                  speak("Wrist Balanced");
+                }
                 document.getElementById("feedback").innerHTML = "Wrist Balanced";
-                speak("Wrist Balanced");
+                
                 //console.log("Wrist are balanced");
             }
         } else {
