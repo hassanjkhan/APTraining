@@ -26,12 +26,16 @@
 </head>
 
 <body>
-<h2 style="color:white;" id = "frames">Frame: </h2>
+<h2 style="color:white;" id = "frames">FrameRate: </h2>
 <div id="container">
   <video autoplay="true" id="videoElement"></video>
   <canvas id="canvas" width="640" height ="480"></canvas>
-  <p style="color:white;" id="feedback" >________________</p>
-  <p style="color:white;" id="reps">Reps: 0</p>
+  <p style="color:white; text-align:center; "  >
+    <font id="feedback" size="6">________________</font>
+  </p>
+  <p style="color:white; text-align:center;" >
+    <font id="reps" size="6">Reps: 0</font>
+    </p>
 </div>
 <audio src="" id="speech" hidden></audio>
 <script>
@@ -74,7 +78,7 @@ var interval = setInterval(function(){
 
   setInterval(function(){
     var header = document.getElementById("frames");
-    header.innerHTML = "Frames: " + frames;
+    header.innerHTML = "FrameRate: " + frames;
     frames = 0;
   }, 1000);
 
@@ -89,16 +93,16 @@ var interval = setInterval(function(){
         if(current.keypoints[9].score >= 0.50 && current.keypoints[10].score >= 0.50){
             if(Math.abs(yr - yl) > 40){
                 if(yr > yl){
-                  if(document.getElementById("feedback").innerHTML != "Right Wrist too high!"){
-                      speak("Right Wrist too high!");
+                  if(document.getElementById("feedback").innerHTML != "Right Wrist too high"){
+                      speak("Right Wrist too high");
                     }
-                    document.getElementById("feedback").innerHTML = "Right Wrist too high!";
+                    document.getElementById("feedback").innerHTML = "Right Wrist too high";
           
                 } else {
-                    if(document.getElementById("feedback").innerHTML != "Left Wrist too high!"){
-                      speak("Left Wrist too high!");
+                    if(document.getElementById("feedback").innerHTML != "Left Wrist too high"){
+                      speak("Left Wrist too high");
                     }
-                    document.getElementById("feedback").innerHTML = "Left Wrist too high!";   
+                    document.getElementById("feedback").innerHTML = "Left Wrist too high";   
                 }
             } else {
                 
@@ -136,8 +140,15 @@ var interval = setInterval(function(){
  
 
 function speak(text){
-  text = encodeURIComponent(text);
-  var url = "http://translate.google.com/translate_tts?tl=en&q=" + text + "&client=tw-ob";
+  //text = encodeURIComponent(text);
+  var url = "";
+  if (text == "Left Wrist too high"){
+    url = "http://translate.google.com.vn/translate_tts?ie=UTF-8&q=";
+  } else {
+    url = "https://translate.google.com.vn/translate_tts?ie=UTF-8&q=";
+  }
+  
+  url += text + "&tl=en&client=tw-ob";
   var audio = document.getElementById("speech");
   audio.src = url;
   audio.play();
