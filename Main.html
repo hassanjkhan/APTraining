@@ -91,13 +91,12 @@ var interval = setInterval(function(){
         yl = current.keypoints[10].position.y;
         yr = current.keypoints[9].position.y;
         if(current.keypoints[9].score >= 0.50 && current.keypoints[10].score >= 0.50){
-            if(Math.abs(yr - yl) > 40){
+            if(Math.abs(yr - yl) > 30){
                 if(yr > yl){
                   if(document.getElementById("feedback").innerHTML != "Right Wrist too high"){
                       speak("Right Wrist too high");
                     }
                     document.getElementById("feedback").innerHTML = "Right Wrist too high";
-          
                 } else {
                     if(document.getElementById("feedback").innerHTML != "Left Wrist too high"){
                       speak("Left Wrist too high");
@@ -105,15 +104,9 @@ var interval = setInterval(function(){
                     document.getElementById("feedback").innerHTML = "Left Wrist too high";   
                 }
             } else {
-                
-                document.getElementById("feedback").innerHTML = "Wrist Balanced";
-                
-                //console.log("Wrist are balanced");
+                document.getElementById("feedback").innerHTML = "Wrist Balanced";  
             }
-        } else {
-            document.getElementById("feedback").innerHTML = "________________";
-            //console.log("current score isn't enough");
-        }
+        } 
         UpdateDirection(current.keypoints[0].position.y,yl,yr);
         //console.log(segmentation.allPoses);
     }
