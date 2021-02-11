@@ -1,5 +1,12 @@
 # APTraining
 
+## How to run
+
+open main.html
+
+
+## Description
+
 Developed this project with a group for Steacie Library HackFest 2020.
 
 Leverages Tensorflow Library BodyPix to correct your form as you do an over head press. 
